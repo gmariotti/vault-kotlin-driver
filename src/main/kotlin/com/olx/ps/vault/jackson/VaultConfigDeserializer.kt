@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.olx.ps.vault.config
 import com.olx.ps.vault.extensions.toSeconds
 import com.olx.ps.vault.internal.VAULT_ADDRESS
@@ -34,12 +33,4 @@ object VaultConfigDeserializer : StdDeserializer<VaultConfig>(VaultConfig::class
             readTimeout(readTimeout?.toSeconds())
         }
     }
-}
-
-/**
- * Used to return a Jackson [com.fasterxml.jackson.databind.module.SimpleModule] containing the following:
- * - [com.bettercloud.vault.VaultConfig] deserializer.
- */
-fun createVaultModule(): SimpleModule = SimpleModule().apply {
-    addDeserializer(VaultConfig::class.java, VaultConfigDeserializer)
 }

@@ -6,10 +6,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotlintest.matchers.shouldBe
 import org.junit.Test
 
-class VaultConfigDeserializerTest {
+class VaultModuleTest {
 
     private val mapper = jacksonObjectMapper()
-        .registerModule(createVaultModule())
+        .registerModule(VaultModule())
 
     // TODO - Junit5 parametrized
     @Test
