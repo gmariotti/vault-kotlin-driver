@@ -1,6 +1,11 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 
+import java.io.File
+import kotlin.collections.listOf
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+import org.gradle.kotlin.dsl.creating
+import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.kotlin
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -12,7 +17,7 @@ base {
 
 // -------------------------- Dependencies -----------------------------------
 
-val kotlinVersion = "1.2.20"
+val kotlinVersion = "1.2.21"
 
 buildscript {
     repositories {
@@ -23,7 +28,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16-eap-2")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16-eap-3")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.21")
     }
 }
 
@@ -32,20 +38,21 @@ apply {
 }
 
 plugins {
-    kotlin("jvm") version "1.2.20"
-    id("org.jlleitschuh.gradle.ktlint") version "2.3.0"
-    id("org.unbroken-dome.test-sets") version "1.4.2"
+    kotlin("jvm") version "1.2.21"
+    id("com.github.ben-manes.versions") version "0.17.0"
     id("io.gitlab.arturbosch.detekt") version ("1.0.0.RC6-2")
     id("jacoco")
     id("java-library")
     id("maven")
     id("maven-publish")
+    id("org.unbroken-dome.test-sets") version "1.4.2"
+}
+
+configurations {
+    create("ktlint")
 }
 
 testSets.create("integrationTest")
-
-val integrationTestCompile = configurations["integrationTestCompile"]
-    ?: throw GradleException("Error finding integrationTestCompile")
 
 repositories {
     mavenCentral()
@@ -53,22 +60,26 @@ repositories {
     jcenter()
 }
 
+val ktlint: Configuration = configurations["ktlint"]
+val integrationTestCompile: Configuration = configurations["integrationTestCompile"]
+
 dependencies {
     api(group = "com.bettercloud", name = "vault-java-driver", version = "3.0.0")
     implementation(kotlin(module = "stdlib-jre8", version = kotlinVersion))
     implementation(kotlin(module = "reflect", version = kotlinVersion))
-    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.2")
+    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.4.1")
     implementation(group = "org.funktionale", name = "funktionale-try", version = "1.2")
     implementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
-    testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.21")
+    testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.2")
     testImplementation(group = "junit", name = "junit", version = "4.12")
-    testImplementation(group = "org.mockito", name = "mockito-core", version = "2.10.0")
+    testImplementation(group = "org.mockito", name = "mockito-core", version = "2.13.0")
     testImplementation(group = "com.nhaarman", name = "mockito-kotlin", version = "1.5.0")
     testImplementation(group = "io.kotlintest", name = "kotlintest", version = "2.0.7")
-    testImplementation(group = "org.eclipse.jetty", name = "jetty-server", version = "9.4.7.v20170914")
+    testImplementation(group = "org.eclipse.jetty", name = "jetty-server", version = "9.4.8.v20171121")
     testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
-    integrationTestCompile("org.bouncycastle:bcprov-jdk15on:1.58")
-    integrationTestCompile("org.testcontainers:testcontainers:1.4.3")
+    integrationTestCompile("org.bouncycastle:bcprov-jdk15on:1.59")
+    integrationTestCompile("org.testcontainers:testcontainers:1.6.0")
+    ktlint("com.github.shyiko:ktlint:0.15.0")
 }
 
 // -------------------------- Tasks Setup -----------------------------------
@@ -92,8 +103,24 @@ detekt {
 
 tasks {
     "wrapper"(Wrapper::class) {
-        gradleVersion = "4.4.1"
+        gradleVersion = "4.5.1"
         distributionType = ALL
+    }
+
+    "ktlintCheck"(JavaExec::class) {
+        description = "Runs ktlint on all kotlin sources in this project."
+        group = "Ktlint"
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = ktlint
+        args = listOf("src/**/*.kt")
+    }
+
+    "ktlintFormat"(JavaExec::class) {
+        description = "Runs the ktlint formatter on all kotlin sources in this project."
+        group = "Ktlint"
+        main = "com.github.shyiko.ktlint.Main"
+        classpath = ktlint
+        args = listOf("-F", "src/**/*.kt")
     }
 }
 
