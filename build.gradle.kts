@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.olx.ps"
-version = "0.1"
+version = "0.1.0"
 base {
     archivesBaseName = "vault-kotlin-driver"
 }

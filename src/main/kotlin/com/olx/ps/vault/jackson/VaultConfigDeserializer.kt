@@ -3,7 +3,6 @@ package com.olx.ps.vault.jackson
 import com.bettercloud.vault.VaultConfig
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.olx.ps.vault.config
 import com.olx.ps.vault.extensions.toSeconds
@@ -19,12 +18,23 @@ import java.time.Duration
 object VaultConfigDeserializer : StdDeserializer<VaultConfig>(VaultConfig::class.java) {
 
     override fun deserialize(parser: JsonParser, context: DeserializationContext): VaultConfig {
-        val node = parser.codec.readTree<JsonNode>(parser)
+        var address: String? = null
+        var token: String? = null
+        var openTimeout: Duration? = null
+        var readTimeout: Duration? = null
 
-        val address = node.get(VAULT_ADDRESS)?.asText()
-        val token = node.get(VAULT_TOKEN)?.asText()
-        val openTimeout = node.get(VAULT_OPEN_TIMEOUT)?.asText()?.run { Duration.parse(this) }
-        val readTimeout = node.get(VAULT_READ_TIMEOUT)?.asText()?.run { Duration.parse(this) }
+        var currentNode = parser.currentToken()
+        if (currentNode.isStructStart) {
+            while (!currentNode.isStructEnd) {
+                currentNode = parser.nextToken()
+                when (parser.currentName) {
+                    VAULT_ADDRESS -> address = parser.readExpectedNextToken(VAULT_ADDRESS)
+                    VAULT_TOKEN -> token = parser.readExpectedNextToken(VAULT_TOKEN)
+                    VAULT_OPEN_TIMEOUT -> openTimeout = Duration.parse(parser.readExpectedNextToken(VAULT_OPEN_TIMEOUT))
+                    VAULT_READ_TIMEOUT -> readTimeout = Duration.parse(parser.readExpectedNextToken(VAULT_READ_TIMEOUT))
+                }
+            }
+        }
 
         return config {
             address(address)
@@ -33,4 +43,10 @@ object VaultConfigDeserializer : StdDeserializer<VaultConfig>(VaultConfig::class
             readTimeout(readTimeout?.toSeconds())
         }
     }
+}
+
+private fun JsonParser.readExpectedNextToken(expected: String): String {
+    if (!nextToken().isScalarValue)
+        throw IllegalArgumentException("Expected '$expected' value")
+    return this.valueAsString
 }
