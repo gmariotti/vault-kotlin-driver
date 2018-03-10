@@ -19,19 +19,16 @@ base {
 
 // -------------------------- Dependencies -----------------------------------
 
-val kotlinVersion = "1.2.21"
+val kotlinVersion = "1.2.30"
 
 buildscript {
     repositories {
         jcenter()
-        maven {
-            setUrl("https://dl.bintray.com/kotlin/kotlin-eap")
-        }
     }
 
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16-eap-3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.21")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30")
     }
 }
 
@@ -40,9 +37,9 @@ apply {
 }
 
 plugins {
-    kotlin("jvm") version "1.2.21"
+    kotlin("jvm") version "1.2.30"
     id("com.github.ben-manes.versions") version "0.17.0"
-    id("com.jfrog.bintray") version "1.7.3"
+    id("com.jfrog.bintray") version "1.8.0"
     id("io.gitlab.arturbosch.detekt") version ("1.0.0.RC6-2")
     id("jacoco")
     id("java-library")
@@ -75,7 +72,7 @@ dependencies {
     implementation(kotlin(module = "reflect", version = kotlinVersion))
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.+")
 
-    testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.2")
+    testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.3")
     testImplementation(group = "junit", name = "junit", version = "4.12")
     testImplementation(group = "org.mockito", name = "mockito-core", version = "2.15.0")
     testImplementation(group = "com.nhaarman", name = "mockito-kotlin", version = "1.5.0")
@@ -86,7 +83,7 @@ dependencies {
     integrationTestCompile("org.bouncycastle:bcprov-jdk15on:1.59")
     integrationTestCompile("org.testcontainers:testcontainers:1.6.0")
 
-    ktlint("com.github.shyiko:ktlint:0.15.1")
+    ktlint("com.github.shyiko:ktlint:0.18.0")
 }
 
 // -------------------------- Tasks Setup -----------------------------------
@@ -109,11 +106,6 @@ detekt {
 }
 
 tasks {
-    "wrapper"(Wrapper::class) {
-        gradleVersion = "4.5.1"
-        distributionType = BIN
-    }
-
     "ktlintCheck"(JavaExec::class) {
         description = "Runs ktlint on all kotlin sources in this project."
         group = "Ktlint"
