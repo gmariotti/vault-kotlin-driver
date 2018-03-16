@@ -9,17 +9,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-// -------------------------- Library Information ----------------------------
-
-group = "com.olx.ps"
-version = "0.1.0"
-base {
-    archivesBaseName = "vault-kotlin-driver"
-}
-
 // -------------------------- Dependencies -----------------------------------
-
-val kotlinVersion = "1.2.30"
 
 buildscript {
     repositories {
@@ -30,10 +20,6 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30")
     }
-}
-
-apply {
-    plugin("org.jetbrains.dokka")
 }
 
 plugins {
@@ -52,51 +38,17 @@ configurations {
     create("ktlint")
 }
 
-testSets.create("integrationTest")
-
 repositories {
-    mavenCentral()
-    mavenLocal()
     jcenter()
 }
 
 val ktlint: Configuration = configurations["ktlint"]
-val integrationTestCompile: Configuration = configurations["integrationTestCompile"]
 
 dependencies {
-    api(group = "com.bettercloud", name = "vault-java-driver", version = "3.0.0")
-    api(group = "org.funktionale", name = "funktionale-try", version = "1.2")
-    api(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
-
-    implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
-    implementation(kotlin(module = "reflect", version = kotlinVersion))
-    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.+")
-
-    testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.3")
-    testImplementation(group = "junit", name = "junit", version = "4.12")
-    testImplementation(group = "org.mockito", name = "mockito-core", version = "2.15.0")
-    testImplementation(group = "com.nhaarman", name = "mockito-kotlin", version = "1.5.0")
-    testImplementation(group = "io.kotlintest", name = "kotlintest", version = "2.0.7")
-    testImplementation(group = "org.eclipse.jetty", name = "jetty-server", version = "9.4.8.v20171121")
-    testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
-
-    integrationTestCompile("org.bouncycastle:bcprov-jdk15on:1.59")
-    integrationTestCompile("org.testcontainers:testcontainers:1.6.0")
-
     ktlint("com.github.shyiko:ktlint:0.18.0")
 }
 
 // -------------------------- Tasks Setup -----------------------------------
-
-kotlin {
-    experimental.coroutines = Coroutines.ENABLE
-}
-
-tasks.withType<KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
 
 detekt {
     profile("main", Action {
@@ -132,56 +84,47 @@ tasks.withType<JacocoReport> {
     }
 }
 
-// -------------------------- Packages creation -----------------------------------
+subprojects {
+    // -------------------------- Library Information ----------------------------
 
-val dokka by tasks.getting(DokkaTask::class) {
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
+    group = "com.olx.ps"
+    version = "0.2.0"
 
-    dependsOn("javadoc")
-}
+    // -------------------------- Dependencies -----------------------------------
 
-val sourceJar by tasks.creating(Jar::class) {
-    classifier = "sources"
-    from(java.sourceSets["main"].allSource)
-    dependsOn("classes")
-}
-
-val javadocJar by tasks.creating(Jar::class) {
-    classifier = "javadoc"
-    from(dokka.outputDirectory)
-    dependsOn("dokka")
-}
-
-artifacts {
-    add("archives", sourceJar)
-    add("archives", javadocJar)
-}
-
-publishing {
-    publications.create("maven", MavenPublication::class.java) {
-        groupId = group as String
-        artifactId = base.archivesBaseName
-        version = project.version as String
-
-        from(components.getByName("java"))
-        artifact(sourceJar)
-        artifact(javadocJar)
+    apply {
+        plugin("kotlin")
+        plugin("java-library")
     }
-}
 
-bintray {
-    user = extra["bintray_user"] as String
-    key = extra["bintray_key"] as String
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
 
-    setPublications("maven")
+    val kotlinVersion = "1.2.30"
 
-    pkg(closureOf<PackageConfig> {
-        repo = base.archivesBaseName
-        name = base.archivesBaseName
-        description = "Kotlin extension of java-vault-driver"
-        vcsUrl = "https://github.com/gmariotti/vault-kotlin-driver.git"
-        setLicenses("Apache-2.0")
-        setLabels("kotlin", "vault", "olx")
-    })
+    dependencies {
+        implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
+        implementation(kotlin(module = "reflect", version = kotlinVersion))
+
+        testImplementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.3")
+        testImplementation(group = "junit", name = "junit", version = "4.12")
+        testImplementation(group = "org.mockito", name = "mockito-core", version = "2.15.0")
+        testImplementation(group = "com.nhaarman", name = "mockito-kotlin", version = "1.5.0")
+        testImplementation(group = "io.kotlintest", name = "kotlintest", version = "2.0.7")
+        testImplementation(group = "org.eclipse.jetty", name = "jetty-server", version = "9.4.8.v20171121")
+        testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
+    }
+
+    // -------------------------- Tasks Setup -----------------------------------
+
+    kotlin {
+        experimental.coroutines = Coroutines.ENABLE
+    }
+
+    tasks.withType<KotlinCompile>().all {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 }

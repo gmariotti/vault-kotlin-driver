@@ -1,2 +1,4 @@
 rootProject.name = 'vault-kotlin-driver'
+include 'vault-kotlin'
+include 'integration-test'
 
