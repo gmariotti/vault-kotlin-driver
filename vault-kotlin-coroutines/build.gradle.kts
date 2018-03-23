@@ -1,3 +1,7 @@
+base {
+    archivesBaseName = "vault-kotlin-coroutines"
+}
+
 dependencies {
     api(project(":vault-kotlin"))
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.5")

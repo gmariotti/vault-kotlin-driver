@@ -22,3 +22,21 @@ public suspend fun Logical.read(path: String): Response = suspendCancellableCoro
         }
     })
 }
+
+public suspend fun Logical.write(path: String, values: Map<String, Any>): Response =
+    suspendCancellableCoroutine { cont ->
+        asyncWrite(path = path, values = values, responseCallback = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                if (cont.isCancelled) {
+                    call.cancel()
+                    return
+                }
+                cont.resumeWithException(e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                cont.resume(response)
+            }
+        }
+        )
+    }
