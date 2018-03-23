@@ -19,10 +19,12 @@ base {
 
 dependencies {
     api(group = "com.bettercloud", name = "vault-java-driver", version = "3.0.0")
+    api(group = "com.squareup.okhttp3", name = "okhttp", version = "3.10.0")
     api(group = "org.funktionale", name = "funktionale-try", version = "1.2")
     api(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
-
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.+")
+
+    testImplementation(group = "com.squareup.okhttp3", name = "mockwebserver", version = "3.10.0")
 }
 
 // -------------------------- Packages creation -----------------------------------

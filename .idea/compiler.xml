@@ -2,8 +2,12 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="common-test_main" target="1.8" />
+      <module name="common-test_test" target="1.8" />
       <module name="integration-test_main" target="1.8" />
       <module name="integration-test_test" target="1.8" />
+      <module name="vault-kotlin-coroutines_main" target="1.8" />
+      <module name="vault-kotlin-coroutines_test" target="1.8" />
       <module name="vault-kotlin-driver_integrationTest" target="1.8" />
       <module name="vault-kotlin-driver_main" target="1.8" />
       <module name="vault-kotlin-driver_test" target="1.8" />

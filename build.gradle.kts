@@ -23,7 +23,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.2.30"
+    kotlin("jvm") version "1.2.31"
     id("com.github.ben-manes.versions") version "0.17.0"
     id("com.jfrog.bintray") version "1.8.0"
     id("io.gitlab.arturbosch.detekt") version ("1.0.0.RC6-2")
@@ -103,7 +103,7 @@ subprojects {
         jcenter()
     }
 
-    val kotlinVersion = "1.2.30"
+    val kotlinVersion = "1.2.31"
 
     dependencies {
         implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
