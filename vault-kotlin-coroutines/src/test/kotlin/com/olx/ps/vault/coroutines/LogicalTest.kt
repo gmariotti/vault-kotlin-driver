@@ -1,5 +1,6 @@
 package com.olx.ps.vault.coroutines
 
+import arrow.core.getOrElse
 import com.olx.ps.vault.api.Logical
 import com.olx.ps.vault.common.test.SECRET_RESPONSE
 import com.olx.ps.vault.config
@@ -11,6 +12,8 @@ import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Test
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -37,7 +40,7 @@ class LogicalTest {
             config = config { address(baseUrl) }
         )
 
-        val response = logical.read("secret")
+        val response = logical.read("secret").getOrElse { throw it }
 
         response.body()?.string() shouldEqual SECRET_RESPONSE
     }
@@ -57,6 +60,8 @@ class LogicalTest {
 
             shouldThrow<SocketTimeoutException> {
                 logical.read("secret")
+                    .getOrElse { throw it }
+                    .let { fail("Expected SocketTimeoutException but received $it") }
             }
         }
     }
@@ -75,7 +80,7 @@ class LogicalTest {
         )
 
         val expectedRequest = mapOf("key" to "value")
-        val response = logical.write("secret", expectedRequest)
+        val response = logical.write("secret", expectedRequest).getOrElse { throw it }
 
         response.code() shouldEqual 204
         val jsonRequest = server.takeRequest()?.run {
@@ -99,6 +104,8 @@ class LogicalTest {
 
             shouldThrow<SocketTimeoutException> {
                 logical.write("secret", mapOf("key" to "value"))
+                    .getOrElse { throw it }
+                    .let { fail("Expected SocketTimeoutException but received $it") }
             }
         }
     }

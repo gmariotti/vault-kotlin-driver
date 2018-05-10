@@ -4,6 +4,7 @@ base {
 
 dependencies {
     api(project(":vault-kotlin"))
+    api(group = "io.arrow-kt", name = "arrow-core", version = "0.7.1")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.5")
 
     testImplementation(project(":common-test"))
