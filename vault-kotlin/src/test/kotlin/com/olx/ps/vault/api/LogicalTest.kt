@@ -2,7 +2,6 @@ package com.olx.ps.vault.api
 
 import com.olx.ps.vault.common.test.SECRET_RESPONSE
 import com.olx.ps.vault.config
-import com.olx.ps.vault.utils.secretResponse
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import io.kotlintest.matchers.shouldEqual
@@ -52,7 +51,7 @@ class LogicalTest {
         }
         logical.asyncRead("secret", callback)
 
-        testChannel.receive() shouldEqual secretResponse
+        testChannel.receive() shouldEqual SECRET_RESPONSE
     }
 
     @Test

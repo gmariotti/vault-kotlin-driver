@@ -40,7 +40,6 @@ public suspend fun Logical.write(path: String, values: Map<String, Any>): Try<Re
             override fun onResponse(call: Call, response: Response) {
                 cont.resume(response)
             }
-        }
-        )
+        })
     }
 }

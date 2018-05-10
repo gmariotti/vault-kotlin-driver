@@ -5,6 +5,7 @@ import com.bettercloud.vault.VaultException;
 import com.olx.ps.testContainer.VaultContainer;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.time.Duration;
 import static io.kotlintest.matchers.MatchersKt.shouldEqual;
 import static java.util.Collections.singletonMap;
 
+@Ignore("Old api")
 public class LogicalExtensionsTest {
 
     @ClassRule
