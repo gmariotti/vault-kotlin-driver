@@ -8,10 +8,12 @@ import com.olx.ps.testContainer.VaultContainer.USER_ID
 import io.kotlintest.matchers.shouldEqual
 import org.junit.BeforeClass
 import org.junit.ClassRule
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 import java.time.Duration
 
+@Ignore("Old api")
 class LogicalExtensionsIntegrationTest {
 
     companion object {

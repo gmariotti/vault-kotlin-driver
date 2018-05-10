@@ -1,8 +1,7 @@
 package com.olx.ps.vault.utils
 
 // 2764800 = 768h0m0s
-val secretResponse = """
-        {
+val secretResponse = """{
             "lease_id": "",
             "lease_duration": 2764800,
             "renewable": false,
